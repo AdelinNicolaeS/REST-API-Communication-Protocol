@@ -1,0 +1,58 @@
+****Alegere JSON****
+Conform recomandarii din enuntul temei, am ales pentru parsare biblioteca
+JSON parson, dedicata pentru limbajul C.
+
+****requests.c****
+Am adaptat scheletul de laborator astfel incat sa ma pliez pe tema. Am modificat
+antetul functiilor din acest fisier si am adaugat functia compute_delete_request
+al carei rol este de a crea mesajul corect pentru a executa comanda de delete a
+unei carti din biblioteca.
+
+****client.c****
+-correct_code: preia ca parametru ceea ce trimite serverul catre client ca
+raspuns si verifica daca primeste codul 200, ce semnfica "OK", adica actiunea a
+fost executata cu succes.
+
+-new_register: citim de la stdin username-ul si parola pe care dorim sa le
+construim, dupa care construim JSON-ul de trimis catre server, il trimitem si
+verificam daca mesajul primit ne confirma crearea unui cont nou prin codul 201.
+A trebuit sa folosesc la citire fgets in loc de scanf pentru a preveni situatia
+cand usernameul si parola sunt compuse din mai multe cuvinte. De asemenea, a
+trebuit sa folosesc getchar() pentru a parsa un '\n' care ma impiedica sa fac
+citirea cu bine folosind scanf. Am lasat scanf numai in main deoarece am vazut
+ca toate posibilele comenzi sunt compuse dintr-un singur cuvant.
+
+-new_login se contruieste intr-un scenariu similar cu cel de la new_register:
+citim numele si parola, facem JSON-ul si in cazul in care mesajul de raspuns de
+la server este cel asteptat, salvam cookie-ul pentru a il putea folosi ulterior
+pentru accesul la biblioteca.
+
+-enter_library: verific mai intai daca sunt logat si daca am acces la biblioteca
+dupa care contruiesc get requestul, vad daca mesajul de confirmare de la server
+este multumitor, dupa care parsez acest raspuns si selectez exact tokenul de
+care voi avea nevoie ulterior pentru a putea executa actiuni pe biblioteca.
+
+-get_books: verifica mai intai daca am posibilitatea de a efectua aceasta
+operatiune, dupa care trimit catre URL-ul potrivit outputul corespunzator si
+parsez rezultatul de la server la client pentru a vedea care este continutul
+bibliotecii in momentul de fata, pe care il afisez intr-un format pretty cu
+ajutorul unor functii din biblioteca parson.
+
+-add_book: dupa ce verific daca am permisiunile de efectuare ale operatiei, voi
+citi de la tastatura cu fgets si getchar parametri necesari pentru a crea o
+noua carte. Daca parametri nu corespund (in principiu daca page_count nu este
+numar), afisez mesaj de eroare. Construiesc JSON-ul de trimis, il trimit si
+apoi verific daca acesta a fost adaugat cu succes, dupa care eliberez memoria.
+
+-get_book: verific permisiunile, apoi alcatuiesc URL-ul necesar pentru a accesa
+cartea cautata, trimit requestul, dupa care in caz de mesaj de confirmare
+pozitiv, il afisez in formatul JSON la iesire.
+
+-delete_book are un format asemanator celui de la functia anterioara, fiind in
+principiu schimbat numai tipul de request accesat.
+
+-logout: verific daca sunt logat, apoi compun un request si modific parametrul
+logat care imi confirma ca in acest moment nu mai sunt logat
+
+-main: citesc mesaje si execut functia corespunzatoare mesajului meu, ori
+afisez mesajul de eroare in caz ca nu exista comanda ceruta. 
